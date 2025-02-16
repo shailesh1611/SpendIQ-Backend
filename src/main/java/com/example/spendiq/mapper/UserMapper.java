@@ -1,7 +1,7 @@
 package com.example.spendiq.mapper;
 
-import com.example.spendiq.dto.UserRequestDTO;
-import com.example.spendiq.dto.UserResponseDTO;
+import com.example.spendiq.dto.user.UserRequestDTO;
+import com.example.spendiq.dto.user.UserResponseDTO;
 import com.example.spendiq.entity.User;
 import org.mapstruct.Mapper;
 

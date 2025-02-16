@@ -4,7 +4,9 @@ import com.example.spendiq.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public interface UserRepository extends JpaRepository<User, String> {
-    User findUserByUserName(String userName);
+    Optional<User> findUserByEmail(String email);
 }

@@ -1,4 +1,4 @@
-package com.example.spendiq.dto.userDto;
+package com.example.spendiq.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

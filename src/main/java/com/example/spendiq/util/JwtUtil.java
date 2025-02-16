@@ -17,9 +17,9 @@ public class JwtUtil {
     @Value("${jwt.secretKey}")
     String secretKey;
 
-    public String generateToken(String userName) {
+    public String generateToken(String email) {
         Map<String,Object> claims = new HashMap<>();
-        return createToken(userName,claims);
+        return createToken(email,claims);
     }
 
     public SecretKey getKey() {
@@ -48,7 +48,7 @@ public class JwtUtil {
         }
     }
 
-    public String extractUserName(String token) {
+    public String extractEmail(String token) {
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()

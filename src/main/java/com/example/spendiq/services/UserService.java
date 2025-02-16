@@ -2,7 +2,9 @@ package com.example.spendiq.services;
 
 import com.example.spendiq.entity.User;
 import com.example.spendiq.exception.UserAlreadyExistsException;
+import com.example.spendiq.exception.UserNotFoundException;
 import com.example.spendiq.repository.UserRepository;
+import com.example.spendiq.util.Placeholder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,16 +30,32 @@ public class UserService {
     public User addUser(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(List.of("USER"));
+            user.setRoles(List.of(Placeholder.ROLE_UNVERIFIED));
             user.setCreatedAt(LocalDateTime.now());
             return userRepository.save(user);
-        } catch (DataIntegrityViolationException e) {
-            log.error("User with username {} already exists", user.getUserName());
-            throw new UserAlreadyExistsException("User with username " + user.getUserName() + " already exists");
+        }
+        catch (DataIntegrityViolationException e) {
+            log.error("User with email {} already exists", user.getEmail());
+            throw new UserAlreadyExistsException("User with username " + user.getEmail() + " already exists");
         }
     }
 
-    public User findUserByUserName(String userName) {
-        return userRepository.findUserByUserName(userName);
+    public void updateRoleToUser(String email) {
+        User existingUser = findUserByEmail(email);
+        if(!existingUser.getRoles().contains(Placeholder.ROLE_USER)) {
+            existingUser.getRoles().add(Placeholder.ROLE_USER);
+            existingUser.getRoles().remove(Placeholder.ROLE_UNVERIFIED);
+            userRepository.save(existingUser);
+        }
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    }
+
+    public boolean isEmailVerified(String email) {
+        User user = findUserByEmail(email);
+        return user.getRoles().contains(Placeholder.ROLE_USER);
     }
 }

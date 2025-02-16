@@ -2,7 +2,6 @@ package com.example.spendiq.filter;
 
 import com.example.spendiq.services.UserDetailsServiceImpl;
 import com.example.spendiq.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,8 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             if (Boolean.TRUE.equals(jwtUtil.validateToken(token)) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String username = jwtUtil.extractUserName(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String email = jwtUtil.extractEmail(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (userDetails != null) {
                     UsernamePasswordAuthenticationToken auth =

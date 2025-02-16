@@ -1,4 +1,4 @@
-package com.example.spendiq.dto;
+package com.example.spendiq.dto.userDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserResponseDTO {
     private UUID userId;
-    private String userName;
+    private String email;
     private List<String> roles;
     private LocalDateTime createdAt;
 }

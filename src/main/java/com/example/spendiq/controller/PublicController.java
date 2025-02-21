@@ -2,9 +2,7 @@ package com.example.spendiq.controller;
 
 import com.example.spendiq.api.response.StatusOk;
 import com.example.spendiq.dto.email.*;
-import com.example.spendiq.dto.user.UserLoginResponseDTO;
-import com.example.spendiq.dto.user.UserRequestDTO;
-import com.example.spendiq.dto.user.UserResponseDTO;
+import com.example.spendiq.dto.user.*;
 import com.example.spendiq.entity.User;
 import com.example.spendiq.exception.InvalidCredentialsException;
 import com.example.spendiq.exception.UserNotVerifiedException;

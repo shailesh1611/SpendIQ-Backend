@@ -1,5 +1,6 @@
 package com.example.spendiq.services;
 
+import com.example.spendiq.entity.Role;
 import com.example.spendiq.entity.User;
 import com.example.spendiq.exception.UserAlreadyExistsException;
 import com.example.spendiq.exception.UserNotFoundException;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -30,22 +30,15 @@ public class UserService {
     public User addUser(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(List.of(Placeholder.ROLE_UNVERIFIED));
+            Role role = new Role(Placeholder.ROLE_USER);
+            user.addRole(role);
+            user.setEmailVerified(false);
             user.setCreatedAt(LocalDateTime.now());
             return userRepository.save(user);
         }
         catch (DataIntegrityViolationException e) {
             log.error("User with email {} already exists", user.getEmail());
             throw new UserAlreadyExistsException("User with username " + user.getEmail() + " already exists");
-        }
-    }
-
-    public void updateRoleToUser(String email) {
-        User existingUser = findUserByEmail(email);
-        if(!existingUser.getRoles().contains(Placeholder.ROLE_USER)) {
-            existingUser.getRoles().add(Placeholder.ROLE_USER);
-            existingUser.getRoles().remove(Placeholder.ROLE_UNVERIFIED);
-            userRepository.save(existingUser);
         }
     }
 
@@ -56,6 +49,13 @@ public class UserService {
 
     public boolean isEmailVerified(String email) {
         User user = findUserByEmail(email);
-        return user.getRoles().contains(Placeholder.ROLE_USER);
+        return user.isEmailVerified();
+    }
+
+    public void updateEmailVerified(String email, boolean b) {
+        User user = findUserByEmail(email);
+        if(user.isEmailVerified() == b) return;
+        user.setEmailVerified(b);
+        userRepository.save(user);
     }
 }

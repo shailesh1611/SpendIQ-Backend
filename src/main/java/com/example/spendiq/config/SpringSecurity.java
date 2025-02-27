@@ -43,7 +43,7 @@ public class SpringSecurity {
         http
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/auth/**", "/email-verification/**", "/health").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticate())

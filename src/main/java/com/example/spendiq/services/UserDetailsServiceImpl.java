@@ -1,5 +1,6 @@
 package com.example.spendiq.services;
 
+import com.example.spendiq.entity.Role;
 import com.example.spendiq.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRoles().toArray(new String[0]))
+                .roles(user.getRoles().stream().map(Role::getRoleName).toList().toArray(new String[0]))
                 .build();
     }
 }

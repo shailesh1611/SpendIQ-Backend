@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-public class PublicController {
+public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -36,9 +36,9 @@ public class PublicController {
     private final EmailService emailService;
 
     @Autowired
-    public PublicController(UserService userService, AuthenticationManager authenticationManager,
-                            JwtUtil jwtUtil, UserMapper userMapper,
-                            EmailService emailService, JwtOtpUtil jwtOtpUtil) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil, UserMapper userMapper,
+                          EmailService emailService, JwtOtpUtil jwtOtpUtil) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;

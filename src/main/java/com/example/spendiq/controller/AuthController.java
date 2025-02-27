@@ -11,7 +11,6 @@ import com.example.spendiq.services.EmailService;
 import com.example.spendiq.services.UserService;
 import com.example.spendiq.util.JwtOtpUtil;
 import com.example.spendiq.util.JwtUtil;
-import com.example.spendiq.util.Placeholder;
 import com.example.spendiq.util.Utils;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -26,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/public")
 @Slf4j
 public class PublicController {
 
@@ -38,12 +36,9 @@ public class PublicController {
     private final EmailService emailService;
 
     @Autowired
-    public PublicController(UserService userService,
-                            AuthenticationManager authenticationManager,
-                            JwtUtil jwtUtil,
-                            UserMapper userMapper,
-                            EmailService emailService,
-                            JwtOtpUtil jwtOtpUtil) {
+    public PublicController(UserService userService, AuthenticationManager authenticationManager,
+                            JwtUtil jwtUtil, UserMapper userMapper,
+                            EmailService emailService, JwtOtpUtil jwtOtpUtil) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -53,24 +48,24 @@ public class PublicController {
     }
 
 
-    @GetMapping("/health-check")
+    @GetMapping("/health")
     public String checkHealth() {
         return "Ok";
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<StatusOk<UserResponseDTO>> addUser(@RequestBody @Valid UserRequestDTO requestData) {
         User user = userMapper.toUser(requestData);
         User addedUser = userService.addUser(user);
         return new ResponseEntity<>(new StatusOk<>(userMapper.toUserResponseDTO(addedUser)), HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<StatusOk<UserLoginResponseDTO>> login(@RequestBody UserRequestDTO requestData) {
+    @PostMapping("/auth/login")
+    public ResponseEntity<StatusOk<UserLoginResponseDTO>> login(@RequestBody UserRequestDTO requestData) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestData.getEmail(), requestData.getPassword()));
             User user = userService.findUserByEmail(requestData.getEmail());
-            if(user.getRoles().contains(Placeholder.ROLE_UNVERIFIED)) {
+            if(!user.isEmailVerified()) {
                 throw new UserNotVerifiedException("User account is not verified. Please verify your email.");
             }
             String token = jwtUtil.generateToken(requestData.getEmail());
@@ -83,8 +78,8 @@ public class PublicController {
     }
 
     @Transactional
-    @PostMapping("/verify-email")
-    public ResponseEntity<StatusOk<EmailVerificationResponseDTO>> verifyEmail(@RequestBody EmailVerificationRequestDTO requestData) throws MessagingException {
+    @PostMapping("/email-verification")
+    public ResponseEntity<StatusOk<EmailVerificationResponseDTO>> sendEmailVerification(@RequestBody EmailVerificationRequestDTO requestData) throws MessagingException {
         if(userService.isEmailVerified(requestData.getEmail())) {
             return new ResponseEntity<>(new StatusOk<>(new EmailVerificationResponseDTO("Email Already Verified",null)),HttpStatus.OK);
         }
@@ -94,12 +89,12 @@ public class PublicController {
         return new ResponseEntity<>(new StatusOk<>(new EmailVerificationResponseDTO("OTP Generated Successfully.",token)), HttpStatus.OK);
     }
 
-    @PostMapping("/verify-email/validate-otp")
+    @PostMapping("/email-verification/otp")
     public ResponseEntity<StatusOk<ValidateOtpResponseDTO>> validateOtp(@RequestBody ValidateOtpRequestDTO requestData) {
         boolean isValid = jwtOtpUtil.validateOtp(requestData.getToken(), requestData.getOtp());
         if (isValid) {
             String email = jwtOtpUtil.extractEmail(requestData.getToken());
-            userService.updateRoleToUser(email);
+            userService.updateEmailVerified(email,true);
             return new ResponseEntity<>(new StatusOk<>(new ValidateOtpResponseDTO("Email Verified Successfully")), HttpStatus.OK);
         }
         else throw new BadCredentialsException("Invalid Otp");

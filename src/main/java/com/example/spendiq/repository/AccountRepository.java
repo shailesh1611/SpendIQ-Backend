@@ -1,4 +1,9 @@
 package com.example.spendiq.repository;
 
-public class AccountRepository {
+import com.example.spendiq.entity.Account;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface AccountRepository extends JpaRepository<Account, UUID> {
 }

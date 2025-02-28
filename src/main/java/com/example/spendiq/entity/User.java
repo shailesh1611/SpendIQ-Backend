@@ -29,14 +29,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Role> roles = new ArrayList<>();
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private boolean emailVerified;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Role> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Account> accounts = new ArrayList<>();
 
     public void addRole(Role role) {
         this.roles.add(role);

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class AddAccountResponseDTO {
+public class AccountResponseDTO {
     private UUID accountId;
     private String accountName;
     private AccountType accountType;

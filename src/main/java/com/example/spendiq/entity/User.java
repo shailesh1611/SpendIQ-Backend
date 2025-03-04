@@ -45,4 +45,9 @@ public class User {
         this.roles.add(role);
         role.setUser(this);
     }
+
+    public void addAccount(Account account) {
+        account.setUser(this);
+        this.accounts.add(account);
+    }
 }

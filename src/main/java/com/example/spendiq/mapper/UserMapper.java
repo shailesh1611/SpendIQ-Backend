@@ -14,10 +14,11 @@ import java.util.List;
 public interface UserMapper {
     @Mapping(target = "roles", source = "user", qualifiedByName = "mapRoles")
     UserResponseDTO toUserResponseDTO(User user);
+
     User toUser(UserRequestDTO requestDTO);
 
     @Named(value = "mapRoles")
-    default List<String> qualifier(User user) {
+    default List<String> getListOfUserRolesName(User user) {
         return user.getRoles().stream().map(Role::getRoleName).toList();
     }
 }
